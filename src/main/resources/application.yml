@@ -1,0 +1,20 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: board-v2.0
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+  datasource:
+    url: ${db_url}
+    username: ${db_username}
+    password: ${db_password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  config-location: classpath:mybatis/config/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mappers/*.xml
+  type-aliases-package: com.example.board.model, com.example.board.dto

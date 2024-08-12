@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Articles</title>
+</head>
+<body>
+<div>
+  <h2><a href="/board/list">자유게시판 - 목록</a></h2>
+  <nav>
+    <form id="searchForm" action="/board/list" method="get">
+      <input type="date" name="startDate">~<input type="date" name="endDate">
+      <select name="category">
+        <option value="0">전체 카테고리</option>
+        <option value="1">자유</option>
+        <option value="2">일상</option>
+        <option value="3">음악</option>
+        <option value="4">영화</option>
+        <option value="5">여행</option>
+      </select>
+      <input type="text" name="keyword">
+      <button type="submit" id="searchBtn">검색</button>
+    </form>
+  </nav>
+  <table>
+    <tr>
+      <td>카테고리</td>
+      <td>아이콘</td>
+      <td>제목</td>
+      <td>작성자</td>
+      <td>조회수</td>
+      <td>등록 일시</td>
+      <td>수정 일시</td>
+    </tr>
+    <tr th:each="article : ${articles}">
+      <td th:text="${article.categoryId}"></td>
+      <td>아이콘</td>
+      <td th:text="${article.title}"></td>
+      <td th:text="${article.author}"></td>
+      <td th:text="${article.viewCount}"></td>
+      <td th:text="${article.postDate}"></td>
+      <td th:text="${article.editDate}"></td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>
