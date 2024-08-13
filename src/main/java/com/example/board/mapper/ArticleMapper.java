@@ -24,4 +24,6 @@ public interface ArticleMapper {
 
     List<Article> selectArticles();
 
+    int insertComment(Comment comment);
+
 }

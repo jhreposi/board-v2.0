@@ -35,7 +35,7 @@
 
     <select id="selectArticleById" parameterType="int" resultType="Articles">
         select
-            a.id as articleId, c.name, title, author, password, content, view_count, post_date, edit_date
+            a.id, c.name, title, author, password, content, view_count, post_date, edit_date
         from article a join category c on a.category_id = c.id
         where a.id = #{articleId}
     </select>
@@ -82,5 +82,12 @@
     <select id="selectArticles" resultType="Article">
         select * from article
     </select>
+
+    <insert id="insertComment" parameterType="Comment">
+        insert into comment
+            (article_id, comment)
+        values
+            (#{articleId}, #{comment})
+    </insert>
 
 </mapper>
