@@ -9,19 +9,23 @@
             display: flex;
             justify-content: space-between;
         }
+
         .left {
             flex: 1;
             display: flex;
             flex-direction: row;
         }
+
         .right {
             display: flex;
             flex-direction: row;
             text-align: right;
         }
+
         .right > span {
             margin: 0 5px;
         }
+
         textarea {
             margin-top: 10px;
             width: 100%;
@@ -30,73 +34,93 @@
     </style>
 </head>
 <body>
-    <div>
-        <div class="info">
-            <div class="left" th:text="${article.author}"></div>
-            <div class="right">
-                등록일시 <span th:text="${article.postDate}"></span>
-                수정일시 <span th:text="${article.editDate}">-</span>
-            </div>
-        </div>
-        <div class="info">
-            <div class="left">
-                [<div th:text="${article.name}"></div>]
-                <div style="margin-left: 10%" th:text="${article.title}"></div>
-            </div>
-            조회수: <div class="right" th:text="${article.viewCount}" style="margin:0 10px"></div>
-        </div>
-        <textarea th:text="${article.content}"></textarea>
-
-        <a th:if="${file != null}" th:href="@{/file/download(fileId=${file.id})}">
-            <div th:text="${file.originalName}"></div>
-        </a>
-
-        <div class="comment-container">
-            <div id="comments" th:each="c : ${comments}">
-                <div th:text="${c.postDate}"></div>
-                <div th:text="${c.comment}"></div>
-                <hr>
-            </div>
-
-            <input type="hidden" th:value="${article.id}" id="articleId">
-            <label>
-                <input type="text" id="comment" placeholder="댓글을 입력해 주세요."/>
-            </label>
-            <button type="button" id="commentBtn">등록</button>
+<div>
+    <div class="info">
+        <div class="left" th:text="${article.author}"></div>
+        <div class="right">
+            등록일시 <span th:text="${article.postDate}"></span>
+            수정일시 <span th:text="${article.editDate}">-</span>
         </div>
     </div>
-    <hr>
-    <button><a th:href="@{/board/list}"> 목록</a></button>
-    <button>수정</button>
-    <button>삭제</button>
+    <div class="info">
+        <div class="left">
+            [
+            <div th:text="${article.name}"></div>
+            ]
+            <div style="margin-left: 10%" th:text="${article.title}"></div>
+        </div>
+        조회수:
+        <div class="right" th:text="${article.viewCount}" style="margin:0 10px"></div>
+    </div>
+    <textarea th:text="${article.content}"></textarea>
+
+    <a th:if="${file != null}" th:href="@{/file/download(fileId=${file.id})}">
+        <div th:text="${file.originalName}"></div>
+    </a>
+
+    <div class="comment-container">
+        <div id="comments" th:each="c : ${comments}">
+            <div th:text="${c.postDate}"></div>
+            <div th:text="${c.comment}"></div>
+            <hr>
+        </div>
+        <div id="newCommentContainer"></div>
+
+        <input type="hidden" th:value="${article.id}" id="articleId">
+        <label>
+            <input type="text" id="comment" placeholder="댓글을 입력해 주세요."/>
+        </label>
+        <button type="button" id="commentBtn">등록</button>
+    </div>
+</div>
+<hr>
+<button><a th:href="@{/board/list}"> 목록</a></button>
+<button>수정</button>
+<button>삭제</button>
 </body>
 <script>
-    document.getElementById('commentBtn').addEventListener('click',function () {
+    document.getElementById('commentBtn').addEventListener('click', function () {
         const comment = document.getElementById('comment').value;
         const id = document.getElementById('articleId').value;
+
         const data = {};
         data['comment'] = comment;
         data['articleId'] = id;
-        console.log(data);
 
-        fetch('/board/comment',{
+        fetch('/board/comment', {
             method: 'post',
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(data),
         }).then(response => {
-            console.log(response.ok)
-            const comments = document.getElementById('comments')
-            comments.innerHTML=
-            document.createElement('div').appendChild(new Date());
-            comments.innerHTML=
-            document.createElement('div').appendChild(comment);
+            const comments = document.getElementById('newCommentContainer')
 
-
+            const newComment = document.createElement('div');
+            newComment.innerHTML = `
+                <div>${getFormattedDateTime()}</div>
+                <div>${comment}</div>
+                <hr>
+                `
+            comments.appendChild(newComment);
         }).catch(msg => {
-            console.log(msg)
+            alert(msg)
         })
     })
+
+    const getFormattedDateTime = function () {
+        const now = new Date();
+
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다
+        const day = String(now.getDate()).padStart(2, '0');
+
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+
+        const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        return formattedDateTime;
+    }
 </script>
 </html>
