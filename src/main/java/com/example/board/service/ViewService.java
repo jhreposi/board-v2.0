@@ -6,27 +6,26 @@ import com.example.board.model.Comment;
 import com.example.board.model.FileVo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
+import org.springframework.stereotype.Service;
 
-public class ViewService implements HttpService {
+import java.util.List;
+@Service
+public class ViewService {
     ArticleMapper articleMapper;
 
     public ViewService(ArticleMapper articleMapper) {
         this.articleMapper = articleMapper;
     }
 
-    @Override
-    public ServiceResult doService(HttpServletRequest request, HttpServletResponse response) {
-        int articleId = Integer.parseInt(request.getParameter("id"));
+    public Articles getArticleView(int articleId) {
+       return articleMapper.selectArticleById(articleId);
+    }
 
-        Articles articleView = articleMapper.selectArticleById(articleId);
-        List<Comment> articleComment = articleMapper.selectComments(articleId);
-        FileVo articleFile = articleMapper.selectFiles(articleId);
-        request.setAttribute("article", articleView);
-        request.setAttribute("comments", articleComment);
-        request.setAttribute("file", articleFile);
-
-        return new ServiceResult("dispatcher", "articleOne.jsp",request,response);
+    public List<Comment> getArticleComment(int articleId) {
+        return articleMapper.selectComments(articleId);
+    }
+    public FileVo getArticleFile(int articleId) {
+        return articleMapper.selectFiles(articleId);
     }
     public FileVo getFileById(int fileId) {
         return articleMapper.selectFile(fileId);

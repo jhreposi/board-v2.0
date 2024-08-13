@@ -1,6 +1,7 @@
 package com.example.board.mapper;
 
 import com.example.board.dto.Articles;
+import com.example.board.dto.Search;
 import com.example.board.model.Article;
 import com.example.board.model.Comment;
 import com.example.board.model.FileVo;
@@ -19,7 +20,7 @@ public interface ArticleMapper {
     FileVo selectFiles(int articleId);
     FileVo selectFile(int fileId);
     int countArticle();
-    int countArticleOption(Map<String, Object> map);
+    int countArticleOption(Search search);
 
     List<Article> selectArticles();
 

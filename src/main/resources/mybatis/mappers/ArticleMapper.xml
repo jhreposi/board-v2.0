@@ -2,25 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.board.mapper.ArticleMapper">
 
-    <select id="selectAllArticle" resultType="Articles" parameterType="java.util.HashMap">
+    <select id="selectAllArticle" resultType="Articles" parameterType="map">
         select c.name, a.title, a.author, a.view_count, a.post_date, COALESCE(a.edit_date, '-'),a.id
         from article a join category c on a.category_id = c.id
         where 1=1
-        <if test="keyword != null and !keyword.isEmpty()">
-        and (title LIKE CONCAT('%', #{keyword}, '%')
-            OR author LIKE CONCAT('%', #{keyword}, '%')
-            OR content LIKE CONCAT('%', #{keyword}, '%'))
+        <if test="search.keyword != null and !search.keyword != ''">
+        and (title LIKE CONCAT('%', #{search.keyword}, '%')
+            OR author LIKE CONCAT('%', #{search.keyword}, '%')
+            OR content LIKE CONCAT('%', #{search.keyword}, '%'))
         </if>
-        <if test="category != null and !category.isEmpty()">
-            and a.category_id = #{category}
+        <if test="search.category != null and !search.category != ''">
+            and a.category_id = #{search.category}
         </if>
-        <if test="startDate != null and startDate != ''">
-            <if test="endDate != null and endDate != ''">
-               and a.post_date between #{startDate} and #{endDate}
+        <if test="search.startDate != null and search.startDate != ''">
+            <if test="search.endDate != null and search.endDate != ''">
+               and a.post_date between #{search.startDate} and #{search.endDate}
             </if>
         </if>
 
-        order by a.post_date desc limit ${paging.limit} offset ${paging.offset}
+        order by a.post_date desc limit #{paging.limit} offset #{paging.offset}
     </select>
 
     <insert id="insertArticle" parameterType="Article" useGeneratedKeys="true" keyProperty="id">
@@ -37,7 +37,7 @@
         select
             a.id as articleId, c.name, title, author, password, content, view_count, post_date, edit_date
         from article a join category c on a.category_id = c.id
-        where a.id = #{id}
+        where a.id = #{articleId}
     </select>
     
     <select id="selectComments" parameterType="int" resultType="Comment">
@@ -60,16 +60,16 @@
         from article;
     </select>
 
-    <select id="countArticleOption" parameterType="map" resultType="int">
+    <select id="countArticleOption" parameterType="Search" resultType="int">
         select count(*)
         from article a
         where 1=1
-        <if test="keyword != null and !keyword.isEmpty()">
+        <if test="keyword != null and !keyword != ''">
             and (title LIKE CONCAT('%', #{keyword}, '%')
             OR author LIKE CONCAT('%', #{keyword}, '%')
             OR content LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        <if test="category != null and !category.isEmpty()">
+        <if test="category != null and !category != ''">
             and a.category_id = #{category}
         </if>
         <if test="startDate != null and startDate != ''">

@@ -4,12 +4,10 @@ package com.example.board.service;
 import com.example.board.dto.Articles;
 import com.example.board.dto.Search;
 import com.example.board.mapper.ArticleMapper;
-import com.example.board.model.Article;
 import com.example.board.util.Paging;
 import com.example.board.util.StringUtil;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -17,47 +15,37 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class ListService implements HttpService {
+public class ListService {
     ArticleMapper articleMapper;
-
     public ListService(ArticleMapper articleMapper) {
         this.articleMapper = articleMapper;
     }
 
-    @Override
-    public ServiceResult doService(HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> map = optionToMap(request);
-
-        int pageNum = Paging.defaultPageNum(request.getParameter("pageNum"));
-        int totalArticle = articleMapper.countArticleOption(map);
-        Paging paging = new Paging(pageNum, totalArticle, 5);
-        map.put("paging", paging);
-
-        List<Articles> articlesList = articleMapper.selectAllArticle(map);
-        request.setAttribute("page", paging);
-        request.setAttribute("articles", articlesList);
-
-        return new ServiceResult("dispatcher","list.jsp",request,response);
-    }
-    public List<Article> getArticleList(Search search) {
+    public Model getArticleList(Search search, Model model) {
+        //빈값일 시 기본 검색 값 설정
         search.setPageNum(defaultPageNum(search.getPageNum()));
         search.setStartDate(defaultStartDate(search.getStartDate()));
         search.setEndDate(defaultEndDate(search.getEndDate()));
-
         System.out.println(search.toString());
-        return articleMapper.selectArticles();
-    }
-    Map<String, Object> optionToMap(HttpServletRequest request) {
+
+        //옵션이 포함된 게시글 카운트
+        int articleCountByOption = articleMapper.countArticleOption(search);
+
+        //페이징 빌드
+        Paging paging = Paging.builder()
+                        .currentPage(search.getPageNum())
+                        .totalCount(articleCountByOption)
+                        .build();
+
+        //옵션으로 게시글 가지고오기
         Map<String, Object> map = new HashMap<>();
-        String start = request.getParameter("start");
-        String end = request.getParameter("end");
-        String category = request.getParameter("category");
-        String keyword = request.getParameter("keyword");
-        map.put("startDate", defaultStartDate(start));
-        map.put("endDate", defaultEndDate(end));
-        map.put("category", category);
-        map.put("keyword", keyword);
-        return map;
+        map.put("search", search);
+        map.put("paging", paging);
+        List<Articles> articles = articleMapper.selectAllArticle(map);
+
+        model.addAttribute("paging", paging);
+        model.addAttribute("articles", articles);
+        return model;
     }
 
     String defaultStartDate(String startDate) {

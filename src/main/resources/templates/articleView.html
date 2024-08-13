@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div>
+        <div class="info">
+            <div th:text="${article.author}"></div>
+            <div th:text="${article.postDate}"></div>
+            <div th:text="${article.editDate}"></div>
+        </div>
+        <div class="title">
+            <div th:text="${article.name}"></div>
+            <div th:text="${article.title}"></div>
+            <div th:text="${article.viewCount}"></div>
+        </div>
+        <div th:text="${article.content}"></div>
+
+        <a th:if="${file != null}" th:href="@{/file/download(fileId=${file.id})}">
+            <div th:text="${file.originalName}"></div>
+        </a>
+
+        <div class="comment-container">
+            <div th:each="c : ${comments}">
+                <div th:text="${c.postDate}"></div>
+                <div th:text="${c.comment}"></div>
+            </div>
+            <label>
+                <input type="text" placeholder="댓글을 입력해 주세요."/>
+            </label>
+            <button type="button" class="commentBtn">등록</button>
+        </div>
+    </div>
+    <hr>
+    <button><a th:href="@{/board/list}"> 목록</a></button>
+    <button>수정</button>
+    <button>삭제</button>
+</body>
+</html>

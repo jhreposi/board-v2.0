@@ -1,0 +1,19 @@
+<Configuration status="WARN">
+<Appenders>
+    <Console name="stdout" target="SYSTEM_OUT">
+        <!--            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"/>-->
+        <PatternLayout pattern="%c{1} %msg%n"/>
+    </Console>
+</Appenders>
+<Loggers>
+    <Root level="error">
+        <AppenderRef ref="stdout" />
+    </Root>
+</Loggers>
+    <Loggers>
+    <Logger name="com.example.board.mapper.ArticleMapper" level="trace">
+        <AppenderRef ref="stdout" />
+    </Logger>
+</Loggers>
+</Configuration>
+

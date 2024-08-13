@@ -1,8 +1,11 @@
 package com.example.board.util;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class Paging {
     int currentPage = 0;
     int totalCount = 0;
@@ -11,7 +14,7 @@ public class Paging {
 
     int limit = 0;
     int offset = 0;
-
+    @Builder
     public Paging(int currentPage, int totalCount) {
         this.currentPage = currentPage;
         this.totalCount = totalCount;
