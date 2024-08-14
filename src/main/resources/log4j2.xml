@@ -6,12 +6,10 @@
     </Console>
 </Appenders>
 <Loggers>
-    <Root level="error">
+    <Root level="info">
         <AppenderRef ref="stdout" />
     </Root>
-</Loggers>
-    <Loggers>
-    <Logger name="com.example.board.mapper.ArticleMapper" level="trace">
+    <Logger name="com.example.board.mapper.ArticleMapper" level="debug" additivity="false">
         <AppenderRef ref="stdout" />
     </Logger>
 </Loggers>

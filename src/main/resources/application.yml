@@ -13,6 +13,11 @@ spring:
     username: ${db_username}
     password: ${db_password}
     driver-class-name: com.mysql.cj.jdbc.Driver
+  servlet:
+    multipart:
+      location: E:\attaches\
+      max-request-size: 10MB
+      max-file-size: 1MB
 
 mybatis:
   config-location: classpath:mybatis/config/mybatis-config.xml
@@ -21,4 +26,5 @@ mybatis:
 
 #logging:
 #  config: classpath:/log4j2.xml
+
 

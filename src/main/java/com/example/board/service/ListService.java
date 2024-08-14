@@ -22,13 +22,13 @@ public class ListService {
     }
 
     public Model getArticleList(Search search, Model model) {
-        //빈값일 시 기본 검색 값 설정
+        //검색 조건 빈값 일 시 기본 값 설정
         search.setPageNum(defaultPageNum(search.getPageNum()));
         search.setStartDate(defaultStartDate(search.getStartDate()));
         search.setEndDate(defaultEndDate(search.getEndDate()));
         System.out.println(search.toString());
 
-        //옵션이 포함된 게시글 카운트
+        //검색조건이 포함된 게시글 카운트
         int articleCountByOption = articleMapper.countArticleOption(search);
 
         //페이징 빌드
@@ -37,7 +37,7 @@ public class ListService {
                         .totalCount(articleCountByOption)
                         .build();
 
-        //옵션으로 게시글 가지고오기
+        //검색조건으로 게시글 리스트 가지고오기
         Map<String, Object> map = new HashMap<>();
         map.put("search", search);
         map.put("paging", paging);

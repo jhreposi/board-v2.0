@@ -9,7 +9,7 @@
         <if test="search.keyword != null and !search.keyword != ''">
         and (title LIKE CONCAT('%', #{search.keyword}, '%')
             OR author LIKE CONCAT('%', #{search.keyword}, '%')
-            OR content LIKE CONCAT('%', #{search.keyword}, '%'))
+            OR content LIKE CONCAT('%',search.category #{search.keyword}, '%'))
         </if>
         <if test="search.category != null and !search.category != ''">
             and a.category_id = #{search.category}
@@ -24,7 +24,7 @@
     </select>
 
     <insert id="insertArticle" parameterType="Article" useGeneratedKeys="true" keyProperty="id">
-        insert into article (category_id,title, author, password, content)
+        insert into article (category_id, title, author, password, content)
         values (#{categoryId}, #{title}, #{author}, #{password}, #{content})
     </insert>
 
@@ -41,7 +41,8 @@
     </select>
     
     <select id="selectComments" parameterType="int" resultType="Comment">
-        select c.id, c.article_id, c.comment, c.post_date from comment c
+        select c.id, c.article_id, c.comment, c.post_date
+        from comment c
         where article_id = #{articleId}
     </select>
 
@@ -65,7 +66,8 @@
         from article a
         where 1=1
         <if test="keyword != null and !keyword != ''">
-            and (title LIKE CONCAT('%', #{keyword}, '%')
+            and
+            (title LIKE CONCAT('%', #{keyword}, '%')
             OR author LIKE CONCAT('%', #{keyword}, '%')
             OR content LIKE CONCAT('%', #{keyword}, '%'))
         </if>
