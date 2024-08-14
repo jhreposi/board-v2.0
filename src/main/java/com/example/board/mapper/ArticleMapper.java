@@ -17,7 +17,7 @@ public interface ArticleMapper {
     int insertFile(FileVo fileVo);
     Articles selectArticleById(int articleId);
     List<Comment> selectComments(int articleId);
-    FileVo selectFiles(int articleId);
+    List<FileVo> selectFiles(int articleId);
     FileVo selectFile(int fileId);
     int countArticle();
     int countArticleOption(Search search);
@@ -25,5 +25,7 @@ public interface ArticleMapper {
     List<Article> selectArticles();
 
     int insertComment(Comment comment);
+
+    int articlePasswordMatch(Article article);
 
 }

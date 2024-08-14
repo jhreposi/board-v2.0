@@ -52,11 +52,14 @@
         조회수:
         <div class="right" th:text="${article.viewCount}" style="margin:0 10px"></div>
     </div>
-    <textarea th:text="${article.content}"></textarea>
+    <div th:text="${article.content}" style="border: 1px solid #ccc; padding: 10px; width: 96%; height: 150px;">
+    </div>
 
-    <a th:if="${file != null}" th:href="@{/file/download(fileId=${file.id})}">
-        <div th:text="${file.originalName}"></div>
-    </a>
+    <div th:each="file : ${files}">
+        <a th:if="${file != null}" th:href="@{/file/download(fileId=${file.id})}">
+            <div th:text="${file.originalName}"></div>
+        </a>
+    </div>
 
     <div class="comment-container">
         <div id="comments" th:each="c : ${comments}">
@@ -75,7 +78,7 @@
 </div>
 <hr>
 <button><a th:href="@{/board/list}"> 목록</a></button>
-<button>수정</button>
+<button><a th:href="@{'/board/modify/' + ${article.id}}">수정</a></button>
 <button>삭제</button>
 </body>
 <script>

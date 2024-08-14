@@ -24,7 +24,7 @@
     </select>
 
     <insert id="insertArticle" parameterType="Article" useGeneratedKeys="true" keyProperty="id">
-        insert into article (category_id, title, author, password, content)
+        insert into article (category_id, title, author, password(password), content)
         values (#{categoryId}, #{title}, #{author}, #{password}, #{content})
     </insert>
 
@@ -35,7 +35,7 @@
 
     <select id="selectArticleById" parameterType="int" resultType="Articles">
         select
-            a.id, c.name, title, author, password, content, view_count, post_date, edit_date
+            a.id, c.id as categoryId, c.name, title, author, password, content, view_count, post_date, edit_date
         from article a join category c on a.category_id = c.id
         where a.id = #{articleId}
     </select>
@@ -91,5 +91,12 @@
         values
             (#{articleId}, #{comment})
     </insert>
+    
+    <select id="articlePasswordMatch" parameterType="Article" resultType="int">
+        select count(id)
+        from article
+        where
+            id = #{id} and password = #{password}
+    </select>
 
 </mapper>

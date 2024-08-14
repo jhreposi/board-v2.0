@@ -4,10 +4,7 @@ import com.example.board.dto.Search;
 import com.example.board.model.Article;
 import com.example.board.model.Comment;
 import com.example.board.model.FileVo;
-import com.example.board.service.CommentService;
-import com.example.board.service.ListService;
-import com.example.board.service.ViewService;
-import com.example.board.service.WriteService;
+import com.example.board.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +27,8 @@ public class ArticleController {
     CommentService commentService;
     @Autowired
     WriteService writeService;
+    @Autowired
+    ModifyService modifyService;
 
     @GetMapping("/list")
     public String getArticles(Search search, Model model){
@@ -41,7 +40,7 @@ public class ArticleController {
     public String getArticleView(@PathVariable int articleId, Model model) {
         model.addAttribute("article", viewService.getArticleView(articleId));
         model.addAttribute("comments", viewService.getArticleComment(articleId));
-        model.addAttribute("file", viewService.getArticleFile(articleId));
+        model.addAttribute("files", viewService.getArticleFiles(articleId));
 
         return "articleView";
     }
@@ -76,6 +75,25 @@ public class ArticleController {
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/modify/{articleId}")
+    public String modifyArticle(@PathVariable int articleId, Model model) {
+        model.addAttribute("article", viewService.getArticleView(articleId));
+        model.addAttribute("files", viewService.getArticleFiles(articleId));
+
+        return "modifyArticle";
+    }
+
+    @PostMapping("/pass-check")
+    public ResponseEntity<?> passCheck(@RequestBody Article article) {
+        System.out.println(article.getPassword());
+        System.out.println(article.getId());
+        if (modifyService.passwordMatchConfirm(article)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }
