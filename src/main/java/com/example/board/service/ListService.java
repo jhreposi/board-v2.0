@@ -26,7 +26,6 @@ public class ListService {
         search.setPageNum(defaultPageNum(search.getPageNum()));
         search.setStartDate(defaultStartDate(search.getStartDate()));
         search.setEndDate(defaultEndDate(search.getEndDate()));
-        System.out.println(search.toString());
 
         //검색조건이 포함된 게시글 카운트
         int articleCountByOption = articleMapper.countArticleOption(search);
@@ -56,7 +55,8 @@ public class ListService {
     }
     String defaultEndDate(String endDate) {
         if (StringUtil.isNullOrEmpty(endDate)) {
-            return LocalDate.now().toString();
+            //yyyy-MM-dd 형식이라 day +1 안하면 오늘날자 미포함됨
+            return LocalDate.now().plusDays(1).toString();
         }
         return endDate;
     }

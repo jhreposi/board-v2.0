@@ -5,80 +5,140 @@
     <title>게시글 수정</title>
 </head>
 <body style="padding: 0 3%" onload="">
-    <h2>게시판 - 수정</h2>
+<h2>게시판 - 수정</h2>
 
-    <form method="post" id="saveForm" action="/board/write" enctype="multipart/form-data">
-        <div class="form-row">
-            <label for="category">카테고리</label>
-            <select name="categoryId" id="category">
-                <option value=0>카테고리 선택</option>
-                <option value="1" th:selected="${article.categoryId == 1}">자유</option>
-                <option value="2" th:selected="${article.categoryId == 2}">일상</option>
-                <option value="3" th:selected="${article.categoryId == 3}">음악</option>
-                <option value="4" th:selected="${article.categoryId == 4}">영화</option>
-                <option value="5" th:selected="${article.categoryId == 5}">여행</option>
-            </select>
-        </div>
+<form method="post" id="saveForm">
+    <div class="form-row">
+        <label for="category">카테고리</label>
+        <select name="categoryId" id="category">
+            <option value=0>카테고리 선택</option>
+            <option value="1" th:selected="${article.categoryId == 1}">자유</option>
+            <option value="2" th:selected="${article.categoryId == 2}">일상</option>
+            <option value="3" th:selected="${article.categoryId == 3}">음악</option>
+            <option value="4" th:selected="${article.categoryId == 4}">영화</option>
+            <option value="5" th:selected="${article.categoryId == 5}">여행</option>
+        </select>
+    </div>
 
-        <div class="form-row">
-            <label for="author">작성자</label>
-            <input type="text" name="author" id="author" th:value="${article.author}"/>
-        </div>
+    <div class="form-row">
+        <label for="author">작성자</label>
+        <input type="text" name="author" id="author" th:value="${article.author}"/>
+    </div>
 
-        <div class="form-row">
-            <label for="pass">비밀번호</label>
-            <input type="password" name="password" id="pass" placeholder="게시글 작성시 비밀번호">
-            <input type="hidden" id="articleId" th:value="${article.id}">
-        </div>
+    <div class="form-row">
+        <label for="pass">비밀번호</label>
+        <input type="password" name="password" id="pass" placeholder="게시글 작성시 비밀번호">
+        <input type="hidden" id="articleId" name="id" th:value="${article.id}">
+    </div>
 
-        <div class="form-row">
-            <label for="title">제목</label>
-            <input type="text" name="title" id="title" th:value="${article.title}">
-        </div>
+    <div class="form-row">
+        <label for="title">제목</label>
+        <input type="text" name="title" id="title" th:value="${article.title}">
+    </div>
 
-        <div class="form-row">
-            <label for="content">내용</label>
-            <input type="text" name="content" id="content" th:value="${article.content}">
-        </div>
+    <div class="form-row">
+        <label for="content">내용</label>
+        <input type="text" name="content" id="content" th:value="${article.content}">
+    </div>
 
-<!--        <div class="form-row">-->
-<!--            <label for="file">파일 첨부</label>-->
-<!--            <input type="file" name="files" id="file">-->
-<!--        </div>-->
+    <!--        <div class="form-row">-->
+    <!--            <label for="file">파일 첨부</label>-->
+    <!--            <input type="file" name="files" id="file">-->
+    <!--        </div>-->
 
-        <div th:each="file : ${files}">
-            <span th:text="${file.originalName}"></span>
-            <span>다운로드</span>
-            <span>X</span>
-        </div>
+    <div th:each="file, state : ${files}">
+        <span th:text="${file.originalName}"></span>
+        <span><button type="button">다운로드</button></span>
+        <span><button type="button" th:attr="data-id = ${file.id}" class="delete-button">X</button></span>
+    </div>
 
-        <div class="form-buttons">
-            <button type="button" onclick="location.href='/board/list'">취소</button>
-            <button type="button" id="saveBtn" onclick="passwordCheck()">저장</button>
-        </div>
-    </form>
+    <didv class="form-buttons">
+        <button type="button" onclick="location.href='/board/list'">취소</button>
+        <button type="button" id="saveBtn" onclick="modifyBtn()">저장</button>
+    </didv>
+</form>
 </body>
 <script>
-    const passwordCheck = () => {
-        alert('test')
+    const passwordCheck = async () => {
         const id = document.getElementById('articleId').value;
         const password = document.getElementById('pass').value;
         const data = {}
         data['password'] = password;
         data['id'] = id;
-        console.log(JSON.stringify(data))
-        fetch('/board/pass-check', {
-            method: 'post',
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
 
-        }).then(resp => {
-            console.log(resp)
-        }).catch(error => {
-            console.log(error)
-        })
+        try {
+            const resp = await fetch('/board/pass-check', {
+                method: 'post',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (resp.ok) {
+                return true;
+            } else {
+                alert('비밀번호가 일치하지 않습니다.')
+                return false;
+            }
+        } catch (error) {
+            return false;
+        }
     }
+    const modifyBtn = async () => {
+        if (!confirm('게시글을 수정하시겠습니까?')) {
+            return;
+        }
+        const isPasswordCorrect = await passwordCheck();
+        if (!isPasswordCorrect) {
+            return;
+        }
+
+        const data = {};
+        const formData = new FormData(document.getElementById('saveForm'));
+
+        formData.forEach(function (value, key) {
+            data[key] = value;
+        })
+        data['removeFiles'] = removeFiles;
+
+        try {
+            const response = await fetch('/board/modify', {
+                method: 'post',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+            // 응답 처리
+            if (response.ok) {
+                alert('게시글이 수정되었습니다.')
+                window.location.href = '/board/list'
+            } else {
+                console.error('Request failed with status', response.status);
+            }
+        } catch (error) {
+            console.log(error)
+        }
+
+
+    }
+
+    const removeFiles = [];
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (!confirm('파일을 삭제하시겠습니까?')) {
+            return;
+        }
+        const deleteButtons = document.querySelectorAll('.delete-button');
+
+        deleteButtons.forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                const fileId = event.target.dataset.id;
+                removeFiles.push(fileId);
+            });
+        });
+    });
+
 </script>
 </html>

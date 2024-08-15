@@ -1,5 +1,7 @@
 package com.example.board.controller;
 
+import com.example.board.dto.Articles;
+import com.example.board.dto.ModifyArticle;
 import com.example.board.dto.Search;
 import com.example.board.model.Article;
 import com.example.board.model.Comment;
@@ -32,7 +34,8 @@ public class ArticleController {
 
     @GetMapping("/list")
     public String getArticles(Search search, Model model){
-        Model serviceModel = listService.getArticleList(search, model);
+        listService.getArticleList(search, model);
+
         return "articleList";
     }
 
@@ -44,13 +47,15 @@ public class ArticleController {
 
         return "articleView";
     }
+
     @GetMapping("/write")
     public String getArticleWrite() {
         return "articleWrite";
     }
 
     @PostMapping("/write")
-    public ResponseEntity<?> addArticle(@ModelAttribute Article article, @RequestPart("files") MultipartFile[] files) {
+    public ResponseEntity<?> addArticle(@ModelAttribute Article article,
+                                        @RequestPart("files") MultipartFile[] files) {
         try {
             //등록 게시글 컨텐츠 저장 후 id 반환
             int addedArticleId = writeService.addArticle(article);
@@ -60,17 +65,17 @@ public class ArticleController {
 
             //파일정보 저장
             writeService.addFileList(uploadedList, addedArticleId);
-        } catch (Exception  e ) {
+        } catch (Exception  e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             // TODO: 2024-08-14 파일 용량 초과, 서버측 유효성 에러 어떻게 처리할지 고민
         }
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
     @PostMapping("/comment")
     public ResponseEntity<?> addArticleComment(@RequestBody Comment comment) {
-        System.out.println(comment.toString());
-        int result = commentService.addComment(comment);
+        int result = commentService.addComment(comment); // add보다는 다른 어휘
         if (result > 0) {
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
@@ -86,14 +91,20 @@ public class ArticleController {
         return "modifyArticle";
     }
 
-    @PostMapping("/pass-check")
-    public ResponseEntity<?> passCheck(@RequestBody Article article) {
-        System.out.println(article.getPassword());
-        System.out.println(article.getId());
+    @PostMapping("/modify")
+    public ResponseEntity<String> modifyArticle(@RequestBody ModifyArticle requestArticle) {
+        modifyService.modifyArticle(requestArticle);
+        modifyService.removeFiles(requestArticle.getRemoveFiles());
+        //비밀번호 재확인 앞단에서 플래그 변경가능
+        return ResponseEntity.ok("Test");
+    }
+
+    @PostMapping("/pass-check")// 프론트에서 조작할 수 있는 방식
+    public ResponseEntity<String> passCheck(@RequestBody Article article) {
         if (modifyService.passwordMatchConfirm(article)) {
-            return new ResponseEntity<>(HttpStatus.OK);
+            return ResponseEntity.ok("일치합니다");//body 확인 메세지
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password");
         }
     }
 }

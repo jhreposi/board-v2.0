@@ -116,15 +116,19 @@
         if (!checkListConfirm()) {
             return;
         }
-        fetch('/board/write',{
+        fetch('/board/write', {
             method: 'post',
             body: new FormData(document.getElementById('saveForm')),
         }).then(resp => {
-            alert('게시글이 저장되었습니다')
-            window.location.href = '/board/list';
+            if (resp.ok) {
+                alert('게시글이 저장되었습니다')
+                window.location.href = '/board/list';
+            } else {
+                alert('게시글 저장에 실패하였습니다.')
+            }
         }).catch(error => {
-            alert('게시글 저장에 실패하였습니다.')
-        })
+            alert('게시글 저장중 오류발생.')
+        });
     })
 
     function checkListConfirm() {
@@ -166,11 +170,9 @@
 
     function serverCheck() {
         const formData = new FormData(document.getElementById('saveForm'));
-        console.log(formData);
         const param = {}
         formData.forEach(function (value, key) {
             param[key] = value;
-            console.log(param);
         })
 
         fetch('/board/vaildation')

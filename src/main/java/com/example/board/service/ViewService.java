@@ -27,7 +27,4 @@ public class ViewService {
     public List<FileVo> getArticleFiles(int articleId) {
         return articleMapper.selectFiles(articleId);
     }
-    public FileVo getFileById(int fileId) {
-        return articleMapper.selectFile(fileId);
-    }
 }

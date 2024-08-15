@@ -38,23 +38,4 @@ public class Paging {
         return (this.currentPage -1) * this.dataPerPage;
     }
 
-    public static int defaultPageNum(String pageNum) {
-        if (pageNum == null || pageNum.isEmpty()) {
-            return 1;
-        } else {
-            return Integer.parseInt(pageNum);
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "Paging{" +
-                "currentPage=" + currentPage +
-                ", totalCount=" + totalCount +
-                ", dataPerPage=" + dataPerPage +
-                ", lastPage=" + lastPage +
-                ", limit=" + limit +
-                ", offset=" + offset +
-                '}';
-    }
 }

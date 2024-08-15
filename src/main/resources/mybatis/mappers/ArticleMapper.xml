@@ -3,68 +3,89 @@
 <mapper namespace="com.example.board.mapper.ArticleMapper">
 
     <select id="selectAllArticle" resultType="Articles" parameterType="map">
-        select c.name, a.title, a.author, a.view_count, a.post_date, COALESCE(a.edit_date, '-'),a.id
-        from article a join category c on a.category_id = c.id
-        where 1=1
+        select
+            c.name, a.title, a.author, a.view_count, a.post_date, a.edit_date, a.id
+        from
+            article a join category c on a.category_id = c.id
+        where
+            1=1
         <if test="search.keyword != null and !search.keyword != ''">
-        and (title LIKE CONCAT('%', #{search.keyword}, '%')
+            and
+            (title LIKE CONCAT('%', #{search.keyword}, '%')
             OR author LIKE CONCAT('%', #{search.keyword}, '%')
-            OR content LIKE CONCAT('%',search.category #{search.keyword}, '%'))
+            OR content LIKE CONCAT('%', #{search.keyword}, '%'))
         </if>
         <if test="search.category != null and !search.category != ''">
             and a.category_id = #{search.category}
         </if>
         <if test="search.startDate != null and search.startDate != ''">
             <if test="search.endDate != null and search.endDate != ''">
-               and a.post_date between #{search.startDate} and #{search.endDate}
+                and a.post_date between #{search.startDate} and #{search.endDate}
             </if>
         </if>
-
         order by a.post_date desc limit #{paging.limit} offset #{paging.offset}
     </select>
 
     <insert id="insertArticle" parameterType="Article" useGeneratedKeys="true" keyProperty="id">
-        insert into article (category_id, title, author, password(password), content)
-        values (#{categoryId}, #{title}, #{author}, #{password}, #{content})
+        insert into article
+            (category_id, title, author, password, content)
+        values
+            (#{categoryId}, #{title}, #{author}, SHA2(#{password},256), #{content})
     </insert>
 
     <insert id="insertFile" parameterType="FileVo">
-        insert into file(article_id, uuid_name, original_name, dir)
-        values (#{articleId}, #{uuidName}, #{originalName}, #{dir})
+        insert into file
+            (article_id, uuid_name, original_name, dir)
+        values
+            (#{articleId}, #{uuidName}, #{originalName}, #{dir})
     </insert>
 
     <select id="selectArticleById" parameterType="int" resultType="Articles">
         select
             a.id, c.id as categoryId, c.name, title, author, password, content, view_count, post_date, edit_date
-        from article a join category c on a.category_id = c.id
-        where a.id = #{articleId}
+        from
+            article a join category c on a.category_id = c.id
+        where
+            a.id = #{articleId}
     </select>
-    
+
     <select id="selectComments" parameterType="int" resultType="Comment">
-        select c.id, c.article_id, c.comment, c.post_date
-        from comment c
-        where article_id = #{articleId}
+        select
+            c.id, c.article_id, c.comment, c.post_date
+        from
+            comment c
+        where
+            article_id = #{articleId}
     </select>
 
     <select id="selectFiles" parameterType="int" resultType="FileVo">
-        select id, article_id, uuid_name, original_name, dir from file
-        where article_id = #{articleId}
+        select
+            id, article_id, uuid_name, original_name, dir from file
+        where
+            article_id = #{articleId}
     </select>
 
     <select id="selectFile" parameterType="int" resultType="FileVo">
-        select id, article_id, uuid_name, original_name, dir from file
-        where id = #{fileId}
+        select
+            id, article_id, uuid_name, original_name, dir from file
+        where
+            id = #{fileId}
     </select>
 
     <select id="countArticle" resultType="int">
-        select count(*)
-        from article;
+        select
+            count(*)
+        from
+            article;
     </select>
 
     <select id="countArticleOption" parameterType="Search" resultType="int">
-        select count(*)
-        from article a
-        where 1=1
+        select
+            count(*)
+        from
+            article a
+        where
+            1=1
         <if test="keyword != null and !keyword != ''">
             and
             (title LIKE CONCAT('%', #{keyword}, '%')
@@ -81,22 +102,31 @@
         </if>
     </select>
 
-    <select id="selectArticles" resultType="Article">
-        select * from article
-    </select>
-
     <insert id="insertComment" parameterType="Comment">
         insert into comment
             (article_id, comment)
         values
             (#{articleId}, #{comment})
     </insert>
-    
+
     <select id="articlePasswordMatch" parameterType="Article" resultType="int">
-        select count(id)
-        from article
+        select
+            count(id)
+        from
+            article
         where
-            id = #{id} and password = #{password}
+            id = #{id} and password = SHA2(#{password},256)
     </select>
 
+    <update id="updateArticle" parameterType="Article">
+        update article
+        set category_id = #{categoryId}, title = #{title}, author = #{author},
+            content = #{content}, edit_date = now()
+        where id = #{id}
+    </update>
+
+    <delete id="deleteFile">
+        delete from file
+        where id = #{fileId}
+    </delete>
 </mapper>

@@ -21,11 +21,9 @@ public interface ArticleMapper {
     FileVo selectFile(int fileId);
     int countArticle();
     int countArticleOption(Search search);
-
-    List<Article> selectArticles();
-
     int insertComment(Comment comment);
-
     int articlePasswordMatch(Article article);
+    int updateArticle(Article article);
+    int deleteFile(int fileId);
 
 }
