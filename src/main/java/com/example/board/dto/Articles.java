@@ -1,8 +1,14 @@
 package com.example.board.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Articles {
     private String name; //category name
     private int id;
@@ -14,21 +20,7 @@ public class Articles {
     private int viewCount;
     private String postDate;
     private String editDate;
+    private String withFile;
 
-    public Articles() {
-    }
-
-    public Articles(String name, int id, int categoryId, String title, String author, String password, String content, int viewCount, String postDate, String editDate) {
-        this.name = name;
-        this.id = id;
-        this.categoryId = categoryId;
-        this.title = title;
-        this.author = author;
-        this.password = password;
-        this.content = content;
-        this.viewCount = viewCount;
-        this.postDate = postDate;
-        this.editDate = editDate;
-    }
 
 }

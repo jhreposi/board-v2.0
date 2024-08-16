@@ -26,6 +26,9 @@ public class ListService {
         search.setPageNum(defaultPageNum(search.getPageNum()));
         search.setStartDate(defaultStartDate(search.getStartDate()));
         search.setEndDate(defaultEndDate(search.getEndDate()));
+        if (search.getKeyword() != null) {
+            search.setKeyword(search.getKeyword().trim());
+        }
 
         //검색조건이 포함된 게시글 카운트
         int articleCountByOption = articleMapper.countArticleOption(search);
@@ -42,6 +45,7 @@ public class ListService {
         map.put("paging", paging);
         List<Articles> articles = articleMapper.selectAllArticle(map);
 
+        model.addAttribute("search", search);
         model.addAttribute("paging", paging);
         model.addAttribute("articles", articles);
         return model;

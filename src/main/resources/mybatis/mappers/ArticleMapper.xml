@@ -4,18 +4,23 @@
 
     <select id="selectAllArticle" resultType="Articles" parameterType="map">
         select
-            c.name, a.title, a.author, a.view_count, a.post_date, a.edit_date, a.id
+            c.name, a.title, a.author, a.view_count, a.post_date, a.edit_date, a.id,
+            case
+                when f.id is not null then 1
+                else 0
+            END AS with_file
         from
             article a join category c on a.category_id = c.id
+                    LEFT JOIN file f on a.id = f.article_id
         where
             1=1
-        <if test="search.keyword != null and !search.keyword != ''">
+        <if test="search.keyword != null and search.keyword != ''">
             and
             (title LIKE CONCAT('%', #{search.keyword}, '%')
             OR author LIKE CONCAT('%', #{search.keyword}, '%')
             OR content LIKE CONCAT('%', #{search.keyword}, '%'))
         </if>
-        <if test="search.category != null and !search.category != ''">
+        <if test="search.category != null and search.category != ''">
             and a.category_id = #{search.category}
         </if>
         <if test="search.startDate != null and search.startDate != ''">
@@ -86,13 +91,13 @@
             article a
         where
             1=1
-        <if test="keyword != null and !keyword != ''">
+        <if test="keyword != null and keyword != ''">
             and
             (title LIKE CONCAT('%', #{keyword}, '%')
             OR author LIKE CONCAT('%', #{keyword}, '%')
             OR content LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        <if test="category != null and !category != ''">
+        <if test="category != null and category != ''">
             and a.category_id = #{category}
         </if>
         <if test="startDate != null and startDate != ''">
