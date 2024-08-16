@@ -1,6 +1,5 @@
 package com.example.board.controller;
 
-import com.example.board.dto.Articles;
 import com.example.board.dto.ModifyArticle;
 import com.example.board.dto.Search;
 import com.example.board.model.Article;
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -93,9 +90,16 @@ public class ArticleController {
 
     @PostMapping("/modify")
     public ResponseEntity<String> modifyArticle(@RequestBody ModifyArticle requestArticle) {
+        Article article = Article.builder()
+                .id(requestArticle.getId())
+                .password(requestArticle.getPassword())
+                .build();
+        boolean isMatched = modifyService.passwordMatchConfirm(article);
+        if (!isMatched) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password!");
+        }
         modifyService.modifyArticle(requestArticle);
         modifyService.removeFiles(requestArticle.getRemoveFiles());
-        //비밀번호 재확인 앞단에서 플래그 변경가능
         return ResponseEntity.ok("Test");
     }
 
