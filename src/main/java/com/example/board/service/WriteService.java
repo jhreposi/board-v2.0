@@ -43,7 +43,7 @@ public class WriteService {
 
             //db저장 vo 생성 , 리스트 추가
             FileVo fileVo = FileVo.builder().dir(attaches)
-                    .uuidName(UUID.randomUUID() + "_" + file.getOriginalFilename())
+                    .uuidName(uuidName)
                     .originalName(file.getOriginalFilename())
                     .build();
             files.add(fileVo);
@@ -54,7 +54,7 @@ public class WriteService {
         if (files != null) {
             files.forEach(fileVo -> {
                 fileVo.setArticleId(articleId);
-                int result = articleMapper.insertFile(fileVo);
+                articleMapper.insertFile(fileVo);
             });
         }
     }

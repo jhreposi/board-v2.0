@@ -7,27 +7,34 @@ import com.example.board.model.Comment;
 import com.example.board.model.FileVo;
 import com.example.board.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.net.URI;
 import java.util.List;
 
 @Controller
 @RequestMapping("/board")
 public class ArticleController {
-    @Autowired
     ListService listService;
-    @Autowired
     ViewService viewService;
-    @Autowired
     CommentService commentService;
-    @Autowired
     WriteService writeService;
-    @Autowired
     ModifyService modifyService;
+    FileDownloadService fileDownloadService;
+
+    public ArticleController(ListService listService, ViewService viewService, CommentService commentService, WriteService writeService, ModifyService modifyService, FileDownloadService fileDownloadService) {
+        this.listService = listService;
+        this.viewService = viewService;
+        this.commentService = commentService;
+        this.writeService = writeService;
+        this.modifyService = modifyService;
+        this.fileDownloadService = fileDownloadService;
+    }
 
     @GetMapping("/list")
     public String getArticles(Search search, Model model){
@@ -100,7 +107,10 @@ public class ArticleController {
         }
         modifyService.modifyArticle(requestArticle);
         modifyService.removeFiles(requestArticle.getRemoveFiles());
-        return ResponseEntity.ok("Test");
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create("/board/view/" + requestArticle.getId())).build();
+
     }
 
     @PostMapping("/pass-check")// 프론트에서 조작할 수 있는 방식
@@ -110,5 +120,12 @@ public class ArticleController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password");
         }
+    }
+
+    @ResponseBody
+    @GetMapping("/file-download")
+    public ResponseEntity<Resource> fileDownload(@RequestParam("fileId") int fileId) {
+        System.out.println(fileId);
+        return fileDownloadService.fileDownloadService(fileId);
     }
 }

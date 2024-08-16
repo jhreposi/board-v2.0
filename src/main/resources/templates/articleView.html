@@ -56,7 +56,7 @@
     </div>
 
     <div th:each="file : ${files}">
-        <a th:if="${file != null}" th:href="@{/file/download(fileId=${file.id})}">
+        <a th:if="${file != null}" th:href="@{/board/file-download(fileId=${file.id})}">
             <div th:text="${file.originalName}"></div>
         </a>
     </div>
